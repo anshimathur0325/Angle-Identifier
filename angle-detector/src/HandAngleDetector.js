@@ -18,7 +18,7 @@ const HandAngleDetector = () => {
   const [problemStatement, setProblemStatement] = useState(null); // New state for problem statement
 
 
-  const OPENAI_API_KEY = "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";
+  const OPENAI_API_KEY = "ENTER YOUR OWN KEY";
 
   useEffect(() => {
     const hands = new Hands.Hands({
