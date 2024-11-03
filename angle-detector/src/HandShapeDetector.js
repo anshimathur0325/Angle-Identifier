@@ -8,7 +8,7 @@ import axios from "axios";
 const HandShapeDetector = () => {
   const webcamRef = useRef(null);
   const canvasRef = useRef(null);
-  const OPENAI_API_KEY = "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";
+  const OPENAI_API_KEY = "ENTER YOUR OWN KEY";
   const [shape, setShape] = useState("No shape detected");
   const [finalShape, setFinalShape] = useState(""); // State to lock in the final shape
   const [mathQuestion, setMathQuestion] = useState(null); // New state for math question
