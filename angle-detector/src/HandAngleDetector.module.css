@@ -1,0 +1,105 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    font-family: 'Fredoka', cursive;
+    text-align: center;
+
+  }
+  
+  .title {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    color:white;
+  }
+  
+  .webcamContainer {
+    position: relative;
+    width: 640px; /* Set this to your desired width */
+  height: 480px;
+  margin-bottom: 20px;
+  }
+  
+  .webcam {
+    border: 2px solid #753FC9; 
+    top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;/* Purple border for the webcam */
+  }
+  
+  .canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%; /* Match the webcam width */
+  }
+  
+  .controls {
+    margin-bottom: 20px;
+  }
+  
+  .button {
+    background-color: #753FC9; /* Purple button background */
+    color: white; /* White text for buttons */
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-size: 20px;
+    font-family: 'Fredoka', cursive;
+
+  }
+  
+  .button:hover {
+    background-color: #42D38C;
+    color:black; /* Change to green on hover */
+  }
+  
+  .info {
+    text-align: center;
+    color:white;
+  }
+  
+  .equationSection {
+    margin-top: 20px;
+    border: 1px solid #753FC9; /* Purple border around the equation section */
+    padding: 15px;
+    border-radius: 8px;
+    background-color: white;
+    color:black; /* White background for contrast */
+  }
+  
+  .equationText {
+    color: black; /* Purple text for the equation */
+  }
+  
+  .answerInput {
+    margin-top: 10px;
+  }
+  
+  .input {
+    padding: 8px;
+    border: 2px solid #753FC9; /* Purple border for input */
+    border-radius: 5px;
+    margin-right: 10px;
+  }
+  
+  .submitButton {
+    background-color: #42D38C; /* Green submit button */
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .feedback {
+    color: black; /* Purple text for feedback */
+  }
+  

@@ -1,10 +1,11 @@
 .App {
   text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+  width: 100%; /* Ensure it takes the full width */
+  height: 100vh; 
+}* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box; /* Optional, helps with layout calculations */
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -35,4 +36,22 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+.button {
+  background-color: #753FC9; /* Purple button background */
+  color: white; /* White text for buttons */
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  font-size: 20px;
+  font-family: 'Fredoka', cursive;
+
+}
+
+.button:hover {
+  background-color: #42D38C;
+  color:black; /* Change to green on hover */
 }

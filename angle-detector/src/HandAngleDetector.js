@@ -3,17 +3,22 @@ import Webcam from "react-webcam";
 import * as Hands from "@mediapipe/hands";
 import { drawConnectors, drawLandmarks } from "@mediapipe/drawing_utils";
 import axios from "axios";
+import styles from './HandAngleDetector.module.css'; // Import custom CSS module
 
 const HandAngleDetector = () => {
   const webcamRef = useRef(null);
   const canvasRef = useRef(null);
   const [angle, setAngle] = useState(null);
-  const [isObtuse, setIsObtuse] = useState(null);
+  const [isObtuse, setIsObtuse] = useState(false);
   const [timerActive, setTimerActive] = useState(false);
   const [mathEquation, setMathEquation] = useState(null);
+  const [guessFeedback, setGuessFeedback] = useState(null); // New state for feedback
+  const [userAnswer, setUserAnswer] = useState(""); // New state for user answer
+  const [answerFeedback, setAnswerFeedback] = useState(null); // New state for feedback
+  const [problemStatement, setProblemStatement] = useState(null); // New state for problem statement
 
-  const OPENAI_API_KEY =
-  "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";
+
+  const OPENAI_API_KEY = "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";
 
   useEffect(() => {
     const hands = new Hands.Hands({
@@ -70,7 +75,6 @@ const HandAngleDetector = () => {
     const angle = calculateAngleBetweenLines(wrist1, pinkyTip1, wrist2, pinkyTip2);
     setAngle(angle);
     setIsObtuse(angle > 90);
-    generateMathEquation(angle, angle > 90); // Call the function to generate the equation
   };
 
   const calculateAngleBetweenLines = (p1, p2, p3, p4) => {
@@ -85,10 +89,19 @@ const HandAngleDetector = () => {
     return Math.round(angleInDegrees);
   };
 
-  const generateMathEquation = async (angle, isObtuse) => {
+  const generateMathEquation = async () => {
     const equationType = isObtuse ? "obtuse" : "acute";
-    let prompt = `Generate a math equation related to a ${equationType} angle of ${angle} degrees.`;
-  
+    let prompt = `Generate a geometric math equation related to angle of ${angle} degrees.
+    For the generated problem, provide:
+        
+    Problem: [Problem statement]
+        
+    Answer: [Numeric Answer]
+        
+    Solution: [Solution explanation]
+        
+    Please format your response exactly as above, and do not include any additional text or explanations. Ensure that the answer is a correct numeric value only, without any units or symbols. Double-check your calculations to maintain accuracy.`;
+
     try {
       const response = await axios.post("https://api.openai.com/v1/chat/completions", {
         model: "gpt-4",
@@ -111,25 +124,41 @@ const HandAngleDetector = () => {
           Authorization: `Bearer ${OPENAI_API_KEY}`,
           "Content-Type": "application/json",
         },
-      }
-      );
-  
-      console.log("API Response:", response.data); // Log the full response
-  
+      });
+
       if (response.data && response.data.choices && response.data.choices.length > 0) {
-        console.log("hew");
         const generatedEquation = response.data.choices[0].message.content.trim();
         setMathEquation(generatedEquation);
+        // Extract only the "Problem" part from the generated equation
+        const problemMatch = generatedEquation.match(/Problem:\s*(.*)/);
+        const problem = problemMatch ? problemMatch[1].trim() : "Problem not found.";
+
+        setProblemStatement(problem);
+        
       } else {
-        console.error("No choices returned in the response.");
-        setMathEquation("Failed to generate an equation.");
+        setProblemStatement("Failed to generate a problem.");
+
       }
     } catch (error) {
-      console.error("Error generating equation:", error);
-      setMathEquation("Error generating equation.");
+        console.error("Error generating equation:", error);
+        setProblemStatement("Error generating problem.");
     }
   };
+  const checkAnswer = () => {
+    // Extract the correct answer from the generated equation
+    const correctAnswerMatch = mathEquation && mathEquation.match(/Answer:\s*(\d+)/);
+    const correctAnswer = correctAnswerMatch ? parseInt(correctAnswerMatch[1], 10) : null;
 
+    if (correctAnswer !== null) {
+      if (parseInt(userAnswer, 10) === correctAnswer) {
+        setAnswerFeedback("Correct!");
+      } else {
+        setAnswerFeedback(`Incorrect. The correct answer is ${correctAnswer}.`);
+      }
+    } else {
+      setAnswerFeedback("Unable to check the answer.");
+    }
+  };
   const startTimer = () => {
     setTimerActive(true);
     setTimeout(() => {
@@ -137,27 +166,65 @@ const HandAngleDetector = () => {
     }, 5000);
   };
 
+  const handleGuess = (guess) => {
+    const correctGuess = (guess === "obtuse" && isObtuse) || (guess === "acute" && !isObtuse);
+    setGuessFeedback(correctGuess ? "Correct!" : "Incorrect. Try again!");
+  };
+
   return (
-    <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", height: "100vh", textAlign: "center" }}>
-      <h1>Hand Angle Detector</h1>
-      <div style={{ position: "relative", width: "640px", height: "480px" }}>
-        <Webcam ref={webcamRef} style={{ position: "absolute", width: "100%", height: "100%" }} />
-        <canvas ref={canvasRef} style={{ position: "absolute", width: "100%", height: "100%" }} />
+    <div className={styles.container}>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap" rel="stylesheet" />
+      <h1 className={styles.title}>Hand Angle Detector</h1>
+
+      <div className={styles.webcamContainer}>
+        <Webcam ref={webcamRef} className={styles.webcam} />
+        <canvas ref={canvasRef} className={styles.canvas} />
       </div>
-      <div style={{ marginTop: "20px" }}>
-        <button onClick={startTimer} disabled={timerActive} style={{ padding: "10px", fontSize: "16px" }}>
+
+      <div className={styles.controls}>
+        <button onClick={startTimer} disabled={timerActive} className={styles.button}>
           {timerActive ? "Detecting..." : "Start 5-Second Angle Detection"}
         </button>
       </div>
-      <div style={{ marginTop: "20px" }}>
+
+      <div className={styles.info}>
         <h2>Detected Angle: {angle ? `${angle}°` : "N/A"}</h2>
-        {angle !== null && (
-          <h3>Angle is {isObtuse ? "Obtuse" : "Not Obtuse"}</h3>
+
+        <button
+          onClick={generateMathEquation}
+          disabled={!angle}
+          className={styles.button}
+        >
+          Generate Math Equation
+        </button>
+        
+        {problemStatement && (
+          <div className={styles.equationSection}>
+            <h4>Generated Math Equation:</h4>
+            <p className={styles.equationText}>{problemStatement}</p>
+
+            <div className={styles.answerInput}>
+              <input
+                type="text"
+                placeholder="Enter your answer"
+                value={userAnswer}
+                onChange={(e) => setUserAnswer(e.target.value)}
+                className={styles.input}
+              />
+              <button onClick={checkAnswer} className={styles.submitButton}>
+                Submit Answer
+              </button>
+            </div>
+            
+            {answerFeedback && <h4 className={styles.feedback}>{answerFeedback}</h4>}
+          </div>
         )}
-        {mathEquation && <h4>Generated Math Equation: {mathEquation}</h4>}
       </div>
     </div>
   );
 };
+
 
 export default HandAngleDetector;
