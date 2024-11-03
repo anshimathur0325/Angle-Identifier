@@ -13,7 +13,7 @@ const HandAngleDetector = () => {
   const [mathEquation, setMathEquation] = useState(null);
 
   const OPENAI_API_KEY =
-  ENTER_API_KEY_HERE;
+  "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";
 
   useEffect(() => {
     const hands = new Hands.Hands({
